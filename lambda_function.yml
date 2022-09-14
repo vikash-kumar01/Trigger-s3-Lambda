@@ -1,0 +1,50 @@
+AWSTemplateFormatVersion : 2010-09-09
+Description: Example Stack
+
+
+
+#Creating the mycloudbucket19998
+Parameters:
+  BucketName:
+     Type: String
+     Default: mycloudbucket19998
+
+Resources:
+ # Applying trigger on the mycloudbucket19998, whenever we'll uload .txt file function will be triggered
+  Bucket:
+   Type: AWS::S3::Bucket
+   Properties:
+     BucketName: !Ref BucketName
+   
+     NotificationConfiguration:
+       LambdaConfigurations:
+         - Event: 's3:ObjectCreated:*'
+           Filter:
+            S3Key:
+              Rules:
+              - Name: suffix
+                Value: .txt
+           Function: !GetAtt Lambda.Arn
+
+  Lambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: "myfirstlambdafunction"
+      Handler: lambda_function.lambda_handler
+      Role: arn:aws:iam::373407815244:role/service-role/TransactionProcessor-role-9iv7s0g0
+      Code:
+        S3Bucket: demobucket01234567891
+        S3Key: code/myfirstlambdafunction.zip
+      Runtime: "python3.8"
+      Timeout: 300
+      MemorySize: 512
+      TracingConfig:
+        Mode: Active
+
+  S3InvokeLambdaPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: lambda:InvokeFunction
+      FunctionName: !Ref Lambda
+      Principal: s3.amazonaws.com
+      SourceArn: !Sub arn:aws:s3:::${BucketName}
