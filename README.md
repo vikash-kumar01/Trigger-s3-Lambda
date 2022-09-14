@@ -78,3 +78,4 @@
                   Principal: s3.amazonaws.com
                   SourceArn: !Sub arn:aws:s3:::${BucketName}
 
+![image](https://user-images.githubusercontent.com/35370115/190159235-d2810ff3-8872-4036-9cc7-253dcb562104.png)
